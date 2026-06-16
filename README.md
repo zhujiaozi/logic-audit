@@ -209,7 +209,7 @@ python src/run_direction_b_eval.py  # 或直接调用
 
 ### FOLIO 验证集（第三方基准）
 
-[FOLIO](https://github.com/Yale-LILY/FOLIO) 是耶鲁发布的 FOL 推理基准，每条含 NL + FOL 编码 + 金标准标签。
+[FOLIO](https://github.com/Yale-LILY/FOLIO) 是耶鲁大学发布的一阶逻辑推理基准（Han et al., 2022），每条包含自然语言陈述、并行 FOL 编码和金标准标签（True / False / Uncertain）。
 
 ```bash
 python test_folio.py --start N --size 10   # 从第 N 条起跑 10 条
@@ -234,6 +234,25 @@ python tests/test_edge_cases.py
 - mcp ≥ 1.9.0, < 2.0
 
 ---
+
+## 引用
+
+本项目的验证测试使用了以下数据集：
+
+- **FOLIO**: Han et al. (2022). *FOLIO: Natural Language Reasoning with First-Order Logic*. arXiv:2209.00840.
+  [Paper](https://arxiv.org/abs/2209.00840) · [GitHub](https://github.com/Yale-LILY/FOLIO)
+- **Logic / LogicClimate**: Jin et al. (2022). Logical fallacy detection benchmark.
+  [GitHub](https://github.com/causalNLP/logical-fallacy)
+
+本项目的 logic_cp 反例校验借鉴了 CLOVER 的思路：
+
+- **CLOVER**: Ryu et al. (2025). *Divide and Translate: Compositional First-Order Logic Translation and Verification for Complex Logical Reasoning*. ICLR 2025.
+  [Paper](https://openreview.net/forum?id=lBc3MXcGqZ) · [GitHub](https://github.com/Hyun-Ryu/clover)
+
+核心依赖：
+
+- **Z3 Theorem Prover**: de Moura & Bjørner (2008). *Z3: An Efficient SMT Solver*. TACAS 2008.
+  [Paper](https://link.springer.com/chapter/10.1007/978-3-540-78800-3_24) · [GitHub](https://github.com/Z3Prover/z3)
 
 ## 协议
 
