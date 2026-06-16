@@ -27,5 +27,5 @@ Thumbs.db
 .env
 
 # Test temp files (if any)
-test_*.py
+/test_*.py
 folio_val.jsonl
