@@ -14,9 +14,19 @@ Usage:
 from __future__ import annotations
 
 import json
+import logging
 import sys
 from pathlib import Path
 from typing import Any
+
+# ── Logger ─────────────────────────────────────────────────────────────────
+logger = logging.getLogger("logic-audit-mcp")
+_log_handler = logging.StreamHandler(sys.stderr)
+_log_handler.setFormatter(logging.Formatter(
+    "%(asctime)s [%(levelname)s] %(name)s: %(message)s", datefmt="%H:%M:%S"
+))
+logger.addHandler(_log_handler)
+logger.setLevel(logging.INFO)
 
 # ── Ensure project root is on sys.path (works regardless of cwd) ──────────
 _HERE = Path(__file__).resolve().parent
@@ -128,6 +138,7 @@ Returns z3_result (sat/unsat/unknown/parse_error), verification_verdict (formal/
                 "type": "object",
                 "properties": {
                     "finding_id": {"type": "string", "description": "Identifier for this verification"},
+                    "error_type": {"type": "string", "description": "Logical error type label (e.g. affirming_consequent, non_sequitur). Used for downstream filtering and reporting."},
                     "query_type": {
                         "type": "string",
                         "enum": ["check_inference", "check_contradiction", "check_equivalence"],
@@ -139,7 +150,7 @@ Returns z3_result (sat/unsat/unknown/parse_error), verification_verdict (formal/
                             "type": "object",
                             "properties": {
                                 "name": {"type": "string", "description": "Variable name (e.g., P, Q, A)"},
-                                "type": {"type": "string", "enum": ["bool", "function"], "description": "bool for propositions, function for predicates"},
+                                "type": {"type": "string", "enum": ["bool", "function", "constant"], "description": "bool for propositions, function for predicates, constant for named entities"},
                                 "meaning": {"type": "string", "description": "Natural language meaning of this variable"},
                             },
                             "required": ["name", "type", "meaning"],
@@ -173,8 +184,21 @@ and returns all results. More efficient than calling verify_fol_encoding repeate
                             "type": "object",
                             "properties": {
                                 "finding_id": {"type": "string"},
+                                "error_type": {"type": "string", "description": "Logical error type label"},
                                 "query_type": {"type": "string", "enum": ["check_inference", "check_contradiction", "check_equivalence"]},
-                                "variables": {"type": "array", "items": {"type": "object"}},
+                                "variables": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {"type": "string", "description": "Variable name (e.g., P, Q, A)"},
+                                            "type": {"type": "string", "enum": ["bool", "function", "constant"], "description": "bool for propositions, function for predicates, constant for named entities"},
+                                            "meaning": {"type": "string", "description": "Natural language meaning of this variable"},
+                                        },
+                                        "required": ["name", "type", "meaning"],
+                                    },
+                                    "description": "Variable declarations used in the formulas",
+                                },
                                 "premises_formulas": {"type": "array", "items": {"type": "string"}},
                                 "claimed_conclusion": {"type": "string"},
                             },
@@ -183,6 +207,59 @@ and returns all results. More efficient than calling verify_fol_encoding repeate
                     },
                 },
                 "required": ["encodings"],
+            },
+        ),
+        Tool(
+            name="verify_with_logic_cp",
+            description="""End-to-end verification: Z3 verification + optional logic_cp counterexample validation in one call.
+Accepts the same FOL encoding as verify_fol_encoding, plus:
+- original_text: the natural language argument (required for logic_cp)
+- llm_judgment: if provided, runs the full pipeline (Z3 → build CP prompt → parse → apply verdict)
+  and returns the final verdict with logic_cp results merged.
+- If original_text is given but llm_judgment is omitted, returns Z3 result + the CP prompt
+  so the caller can invoke an LLM externally, then feed the response back via llm_judgment.""",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "finding_id": {"type": "string", "description": "Identifier for this verification"},
+                    "error_type": {"type": "string", "description": "Logical error type label"},
+                    "query_type": {
+                        "type": "string",
+                        "enum": ["check_inference", "check_contradiction", "check_equivalence"],
+                        "description": "Type of Z3 verification query",
+                    },
+                    "variables": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string", "description": "Variable name (e.g., P, Q, A)"},
+                                "type": {"type": "string", "enum": ["bool", "function", "constant"], "description": "bool for propositions, function for predicates, constant for named entities"},
+                                "meaning": {"type": "string", "description": "Natural language meaning of this variable"},
+                            },
+                            "required": ["name", "type", "meaning"],
+                        },
+                        "description": "Variable declarations used in the formulas",
+                    },
+                    "premises_formulas": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "List of premise formulas using supported operators: Implies, And, Or, Not, Xor, Eq, Forall, Exists.",
+                    },
+                    "claimed_conclusion": {
+                        "type": "string",
+                        "description": "The claimed conclusion formula (omit for check_contradiction)",
+                    },
+                    "original_text": {
+                        "type": "string",
+                        "description": "The natural language argument being audited (required for logic_cp validation)",
+                    },
+                    "llm_judgment": {
+                        "type": "string",
+                        "description": "Optional raw LLM response from a CP prompt. If provided, runs the full pipeline including parse + apply verdict.",
+                    },
+                },
+                "required": ["finding_id", "query_type", "variables", "premises_formulas"],
             },
         ),
         Tool(
@@ -315,11 +392,17 @@ Useful for checking formula syntax before submitting to verify_fol_encoding.""",
 
 @server.call_tool()
 async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
+    finding_id = arguments.get("finding_id", arguments.get("error_type", "?"))
+    logger.info("Tool call: %s | id=%s", name, finding_id)
     try:
         if name == "verify_fol_encoding":
             return await _handle_verify_fol(arguments)
         elif name == "batch_verify":
+            count = len(arguments.get("encodings", []))
+            logger.info("  batch size: %d", count)
             return await _handle_batch_verify(arguments)
+        elif name == "verify_with_logic_cp":
+            return await _handle_verify_with_logic_cp(arguments)
         elif name == "build_logic_cp_prompt":
             return await _handle_build_cp_prompt(arguments)
         elif name == "parse_logic_cp_judgment":
@@ -333,8 +416,10 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
         elif name == "parse_fol_formula":
             return await _handle_parse_formula(arguments)
         else:
+            logger.warning("Unknown tool requested: %s", name)
             return [TextContent(type="text", text=json.dumps({"error": f"Unknown tool: {name}"}))]
     except Exception as e:
+        logger.error("Tool %s failed: %s", name, str(e), exc_info=True)
         return [TextContent(type="text", text=json.dumps({"error": str(e)}, ensure_ascii=False))]
 
 
@@ -367,6 +452,70 @@ async def _handle_batch_verify(args: dict) -> list[TextContent]:
     encodings = args.get("encodings", [])
     results = verify_all(encodings)
     return [TextContent(type="text", text=json.dumps(results, indent=2, ensure_ascii=False))]
+
+
+async def _handle_verify_with_logic_cp(args: dict) -> list[TextContent]:
+    """End-to-end: Z3 verify → optionally build CP prompt → optionally parse + apply verdict."""
+    finding_id = args.get("finding_id", "unknown")
+    query_type = args.get("query_type", "check_inference")
+    variables = args.get("variables", [])
+    premises = args.get("premises_formulas", [])
+    conclusion = args.get("claimed_conclusion", "")
+    original_text = args.get("original_text", "")
+    llm_judgment = args.get("llm_judgment")
+
+    # Step 1: Z3 verification
+    fol_input = {
+        "finding_id": finding_id,
+        "error_type": args.get("error_type", "unknown"),
+        "query_type": query_type,
+        "variables": variables,
+        "premises_formulas": premises,
+        "claimed_conclusion": conclusion,
+    }
+    parsed = parse_fol_encoding(fol_input)
+    z3_result = run_verification(parsed)
+
+    # If Z3 didn't find SAT, no CP needed
+    if z3_result.get("z3_result") != "sat":
+        return [TextContent(type="text", text=json.dumps({
+            "finding_id": finding_id,
+            "z3_result": z3_result,
+            "logic_cp_status": "not_applicable",
+        }, indent=2, ensure_ascii=False))]
+
+    # Step 2: Build CP prompt if original_text is provided
+    cp_prompt = None
+    if original_text and z3_result.get("model"):
+        cp_prompt = build_counterexample_prompt(
+            original_text=original_text,
+            premises=premises,
+            conclusion=conclusion,
+            variables=variables,
+            model_dict=z3_result.get("model", {}),
+        )
+
+    # Step 3: If LLM judgment is provided, parse and apply it
+    if llm_judgment and cp_prompt:
+        parsed_judgment = parse_judgment(llm_judgment)
+        final_result = apply_logic_cp_verdict(z3_result, parsed_judgment["verdict"])
+        return [TextContent(type="text", text=json.dumps({
+            "finding_id": finding_id,
+            "z3_result": z3_result,
+            "logic_cp_status": "completed",
+            "cp_verdict": parsed_judgment["verdict"],
+            "cp_reasoning": parsed_judgment.get("reasoning", ""),
+            "final_verdict": final_result,
+        }, indent=2, ensure_ascii=False))]
+
+    # Return Z3 result + CP prompt for caller to complete the pipeline
+    return [TextContent(type="text", text=json.dumps({
+        "finding_id": finding_id,
+        "z3_result": z3_result,
+        "logic_cp_status": "prompt_ready",
+        "cp_prompt": cp_prompt,
+        "prompt": "Send this cp_prompt to an LLM, then call verify_with_logic_cp again with the llm_judgment parameter set to the response.",
+    }, indent=2, ensure_ascii=False))]
 
 
 async def _handle_build_cp_prompt(args: dict) -> list[TextContent]:
@@ -476,18 +625,23 @@ async def _handle_parse_formula(args: dict) -> list[TextContent]:
     formula_str = args.get("formula", "")
     variables = args.get("variables", [])
 
-    var_map = {}
-    for v in variables:
-        name = v["name"]
-        vtype = v.get("type", "bool")
-        if vtype == "bool":
-            from z3 import Bool
-            var_map[name] = Bool(name)
-        else:
-            from z3 import Function, BoolSort
-            var_map[name] = Function(name, BoolSort(), BoolSort())
+    # Reuse parse_fol_encoding to build the var_map (avoids duplicating Z3 type mapping)
+    fol_input = {
+        "finding_id": "parse-only",
+        "error_type": "unknown",
+        "query_type": "check_inference",
+        "variables": variables,
+        "premises_formulas": ["True"],
+        "claimed_conclusion": "True",
+    }
+    parsed = parse_fol_encoding(fol_input)
+    if not parsed["success"]:
+        return [TextContent(type="text", text=json.dumps(
+            {"success": False, "error": parsed.get("error", "variable parsing failed")},
+            indent=2, ensure_ascii=False,
+        ))]
 
-    expr, error = parse_formula(formula_str, var_map)
+    expr, error = parse_formula(formula_str, parsed["var_map"])
     if error:
         result = {"success": False, "error": error}
     else:
@@ -501,7 +655,9 @@ async def _handle_parse_formula(args: dict) -> list[TextContent]:
 # ═══════════════════════════════════════════════════════════════════════════
 
 async def _run_server() -> None:
+    logger.info("Starting logic-audit MCP server (v1.0.0)")
     async with mcp.server.stdio.stdio_server() as (read, write):
+        logger.info("MCP stdio transport established")
         await server.run(
             read,
             write,

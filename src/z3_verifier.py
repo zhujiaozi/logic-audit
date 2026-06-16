@@ -430,14 +430,49 @@ def run_verification(parsed: dict) -> dict:
         }
 
 
-def verify_all(fol_encodings: list) -> list:
-    """Verify a batch of FOL encodings. Returns list of verdict dicts."""
-    verdicts = []
-    for encoding in fol_encodings:
+def verify_all(fol_encodings: list, max_workers: int = 1) -> list:
+    """Verify a batch of FOL encodings. Returns list of verdict dicts in input order.
+
+    When max_workers=1 (default), runs serially — safe on all platforms.
+    When max_workers > 1, uses ProcessPoolExecutor for parallel verification.
+    Thread-level concurrency is avoided because Z3 solver objects are not
+    thread-safe on Windows (GC cross-thread access violations).
+    """
+    if max_workers <= 1:
+        verdicts = []
+        for encoding in fol_encodings:
+            parsed = parse_fol_encoding(encoding)
+            verdict = run_verification(parsed)
+            verdicts.append(verdict)
+        return verdicts
+
+    # Process-level concurrency — avoids Z3 thread-safety issues
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+
+    def _verify_one(encoding: dict) -> dict:
         parsed = parse_fol_encoding(encoding)
-        verdict = run_verification(parsed)
-        verdicts.append(verdict)
-    return verdicts
+        return run_verification(parsed)
+
+    verdicts = []
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(_verify_one, e): i for i, e in enumerate(fol_encodings)}
+        for future in as_completed(futures):
+            idx = futures[future]
+            try:
+                verdicts.append((idx, future.result()))
+            except Exception as exc:
+                verdicts.append((idx, {
+                    "finding_id": fol_encodings[idx].get("finding_id", "unknown"),
+                    "z3_result": "error",
+                    "interpretation": "concurrent_execution_failed",
+                    "verification_verdict": VerificationVerdict.UNCERTAIN.value,
+                    "model": None,
+                    "error": str(exc),
+                }))
+
+    # Restore original order
+    verdicts.sort(key=lambda x: x[0])
+    return [v for _, v in verdicts]
 
 
 # ─── CLI Entry Point ──────────────────────────────────────────────────────────

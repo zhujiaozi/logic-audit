@@ -9,11 +9,11 @@ description = "Logic Audit - formal verification framework for logical fallacy d
 requires-python = ">=3.10"
 dependencies = [
     "z3-solver>=4.13",
-    "mcp>=1.27",
+    "mcp>=1.9.0,<2.0",
 ]
 
 [project.scripts]
-logic-audit-mcp = "mcp_server:main"
+logic-audit-mcp = "src.mcp_server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
