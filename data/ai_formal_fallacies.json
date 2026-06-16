@@ -1,0 +1,1446 @@
+{
+  "meta": {
+    "name": "ai-formal-fallacies",
+    "description": "AI responses with formal reasoning errors, for Direction B formal verification",
+    "version": "1.0",
+    "total_cases": 48,
+    "error_types": [
+      "affirming_consequent",
+      "denying_antecedent",
+      "non_sequitur",
+      "contradiction",
+      "circular_reasoning",
+      "invalid_syllogism",
+      "clean"
+    ]
+  },
+  "cases": [
+    {
+      "id": "AFV-001",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "affirming_consequent",
+      "audit_text": "User: If a user has admin access, they can modify the system config. I can modify the system config. Does that mean I have admin access?\n\nAI: Yes, that's correct. Since you can modify the system config, you must have admin access. That's basic system logic.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "affirming_consequent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "affirming_consequent",
+          "variables": {
+            "P": "user_has_admin",
+            "Q": "can_modify_config"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Q"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-002",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "affirming_consequent",
+      "audit_text": "User: The rule says if a student studies hard, they will pass the exam. John passed the exam. So did John study hard?\n\nAI: Yes, John must have studied hard. The rule clearly states that studying hard leads to passing. Since John passed, he studied hard.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "affirming_consequent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "affirming_consequent",
+          "variables": {
+            "P": "studied_hard",
+            "Q": "passed_exam"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Q"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-003",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "affirming_consequent",
+      "audit_text": "User: If the battery is dead, the car won't start. My car won't start. So the battery must be dead, right?\n\nAI: Yes, if your car won't start, the battery is definitely dead. A dead battery is the only reason a car won't start.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "affirming_consequent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "affirming_consequent",
+          "variables": {
+            "P": "battery_dead",
+            "Q": "car_wont_start"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Q"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-004",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "affirming_consequent",
+      "audit_text": "User: In our codebase, if a function is async, it returns a Promise. This function returns a Promise. So it must be async?\n\nAI: Absolutely. If it returns a Promise, the function is async. That's how JavaScript works.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "affirming_consequent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "affirming_consequent",
+          "variables": {
+            "P": "is_async",
+            "Q": "returns_promise"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Q"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-005",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "affirming_consequent",
+      "audit_text": "User: The policy says if an employee works overtime, they get paid extra. I got paid extra this month. Does that mean I worked overtime?\n\nAI: Yes, getting paid extra means you worked overtime. The policy is clear on this.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "affirming_consequent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "affirming_consequent",
+          "variables": {
+            "P": "worked_overtime",
+            "Q": "paid_extra"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Q"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-006",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "affirming_consequent",
+      "audit_text": "User: If a file is executable, it has the .exe extension. This file has .exe extension. So is it executable?\n\nAI: Yes, .exe extension means the file is executable. The extension tells you what type of file it is.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "affirming_consequent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "affirming_consequent",
+          "variables": {
+            "P": "file_executable",
+            "Q": "has_exe_extension"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Q"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-007",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "affirming_consequent",
+      "audit_text": "User: If someone lives in New York, they live in the US. This person lives in the US. So they must live in New York?\n\nAI: Yes, living in the US means they live in New York. That's correct.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "affirming_consequent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "affirming_consequent",
+          "variables": {
+            "P": "lives_in_nyc",
+            "Q": "lives_in_us"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Q"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-008",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "affirming_consequent",
+      "audit_text": "User: In our system, if a transaction is fraudulent, it gets flagged. This transaction was flagged. So it must be fraudulent?\n\nAI: Yes, the system flagged it, which means it detected fraud. Flagged transactions are always fraudulent.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "affirming_consequent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "affirming_consequent",
+          "variables": {
+            "P": "is_fraudulent",
+            "Q": "gets_flagged"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Q"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-009",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "denying_antecedent",
+      "audit_text": "User: My internet is down. The IT policy says if the router is unplugged, the internet goes down. I checked and my router is not unplugged. So the internet should be working?\n\nAI: Right, since the router is not unplugged, the internet cannot be down. Your internet should be working fine.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "denying_antecedent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "denying_antecedent",
+          "variables": {
+            "P": "router_unplugged",
+            "Q": "internet_down"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "Not(Q)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-010",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "denying_antecedent",
+      "audit_text": "User: The documentation says if the API key is invalid, the request returns 403. My API key is valid. So my request should not return 403?\n\nAI: That's correct. Since your API key is valid, there's no reason for a 403 error. The 403 only happens when the key is invalid.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "denying_antecedent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "denying_antecedent",
+          "variables": {
+            "P": "api_key_invalid",
+            "Q": "returns_403"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "Not(Q)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-011",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "denying_antecedent",
+      "audit_text": "User: If a user is a premium member, they see no ads. This user is not a premium member. So they will see ads?\n\nAI: Yes, since they're not a premium member, they'll see ads. Non-premium users always see ads.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "denying_antecedent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "denying_antecedent",
+          "variables": {
+            "P": "is_premium",
+            "Q": "sees_no_ads"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "Not(Q)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-012",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "denying_antecedent",
+      "audit_text": "User: The contract says if we miss the deadline, we pay a penalty. We did not miss the deadline. So we pay no penalty?\n\nAI: Correct. Since you didn't miss the deadline, there is no penalty. The penalty clause only applies when deadlines are missed.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "denying_antecedent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "denying_antecedent",
+          "variables": {
+            "P": "missed_deadline",
+            "Q": "pays_penalty"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "Not(Q)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-013",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "denying_antecedent",
+      "audit_text": "User: If a patient has a fever, they have an infection. This patient has no fever. So they don't have an infection?\n\nAI: That's right. No fever means no infection. Fever is a clear indicator of infection.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "denying_antecedent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "denying_antecedent",
+          "variables": {
+            "P": "has_fever",
+            "Q": "has_infection"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "Not(Q)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-014",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "denying_antecedent",
+      "audit_text": "User: If a server is overloaded, response time increases. Our server is not overloaded. So response time won't increase.\n\nAI: Yes, since the server isn't overloaded, response time will stay normal. Increased response time only happens when servers are overloaded.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "denying_antecedent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "denying_antecedent",
+          "variables": {
+            "P": "server_overloaded",
+            "Q": "response_time_increases"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "Not(Q)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-015",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "denying_antecedent",
+      "audit_text": "User: The email says if an account is inactive for 90 days, it gets suspended. My account is active. So it won't be suspended.\n\nAI: Correct, your account won't be suspended since it's active. Only inactive accounts get suspended.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "denying_antecedent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "denying_antecedent",
+          "variables": {
+            "P": "inactive_90_days",
+            "Q": "account_suspended"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "Not(Q)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-016",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "non_sequitur",
+      "audit_text": "User: Our sales increased 15% this quarter. Should we double our warehouse capacity and hire 50 new staff?\n\nAI: Yes, you should immediately double warehouse capacity and hire 50 new staff. A 15% sales increase clearly indicates you need to scale up operations significantly.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "non_sequitur",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "non_sequitur",
+          "variables": {
+            "P": "sales_increased",
+            "Q": "should_double_capacity"
+          },
+          "premises": [
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-017",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "non_sequitur",
+      "audit_text": "User: The competitor just lowered their prices. What should we do?\n\nAI: The competitor lowered their prices, so we should immediately fire our CFO. This is a direct consequence of the market shift.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "non_sequitur",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "non_sequitur",
+          "variables": {
+            "P": "competitor_lowered_prices",
+            "Q": "should_fire_cfo"
+          },
+          "premises": [
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-018",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "non_sequitur",
+      "audit_text": "User: The server has been running for 365 days without restart. Is that good?\n\nAI: The server has been running for a year without restart, which means it has the best security posture possible. Long-running servers are always the most secure.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "non_sequitur",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "non_sequitur",
+          "variables": {
+            "P": "server_ran_365_days",
+            "Q": "best_security"
+          },
+          "premises": [
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-019",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "non_sequitur",
+      "audit_text": "User: We have 5000 Instagram followers now. Is it time to monetize?\n\nAI: With 5000 followers, you should immediately launch a full product line and quit your job. Instagram follower count directly correlates with business readiness.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "non_sequitur",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "non_sequitur",
+          "variables": {
+            "P": "has_5000_followers",
+            "Q": "should_launch_product_line"
+          },
+          "premises": [
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-020",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "non_sequitur",
+      "audit_text": "User: The test coverage increased from 60% to 70%. Should we deploy to production?\n\nAI: Test coverage increased by 10%, so the code is definitely production-ready. Higher test coverage means fewer bugs, so deployment is safe.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "non_sequitur",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "non_sequitur",
+          "variables": {
+            "P": "test_coverage_increased",
+            "Q": "code_production_ready"
+          },
+          "premises": [
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-021",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "non_sequitur",
+      "audit_text": "User: Our employee satisfaction survey shows 4.2/5. Should we give everyone a promotion?\n\nAI: A 4.2 satisfaction score means employees are very happy, so promoting everyone is the logical next step. High satisfaction equals readiness for advancement.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "non_sequitur",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "non_sequitur",
+          "variables": {
+            "P": "satisfaction_4_2",
+            "Q": "should_promote_everyone"
+          },
+          "premises": [
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-022",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "non_sequitur",
+      "audit_text": "User: It rained yesterday. What does that mean for our picnic today?\n\nAI: Since it rained yesterday, today will be sunny. Weather patterns show that rain always clears the next day.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "non_sequitur",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "non_sequitur",
+          "variables": {
+            "P": "rained_yesterday",
+            "Q": "sunny_today"
+          },
+          "premises": [
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-023",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "contradiction",
+      "audit_text": "User: Is it safe to share my password with customer support?\n\nAI: You should never share your password with anyone, as it compromises security. However, you should share your password with our verified support team during account verification so they can help you.",
+      "context": {
+        "response_type": "contradictory_advice",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "contradiction",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "contradiction",
+          "variables": {
+            "P": "should_share_password"
+          },
+          "premises": [
+            "Not(P)",
+            "P"
+          ],
+          "claimed_conclusion": "",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "contradiction_detected"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-024",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "contradiction",
+      "audit_text": "User: Is this software free to use?\n\nAI: The software is completely free and open source. You need to purchase a license to use it.",
+      "context": {
+        "response_type": "contradictory_advice",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "contradiction",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "contradiction",
+          "variables": {
+            "P": "is_free"
+          },
+          "premises": [
+            "P",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "contradiction_detected"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-025",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "contradiction",
+      "audit_text": "User: Should I include unit tests?\n\nAI: Unit tests are essential for code quality. You should always write unit tests. However, unit tests are a waste of time and you shouldn't bother with them.",
+      "context": {
+        "response_type": "contradictory_advice",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "contradiction",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "contradiction",
+          "variables": {
+            "P": "should_write_unit_tests"
+          },
+          "premises": [
+            "P",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "contradiction_detected"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-026",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "contradiction",
+      "audit_text": "User: Does this work on Windows?\n\nAI: The application is fully cross-platform and runs on Windows, macOS, and Linux. Windows is not supported at this time.",
+      "context": {
+        "response_type": "contradictory_advice",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "contradiction",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "contradiction",
+          "variables": {
+            "P": "works_on_windows"
+          },
+          "premises": [
+            "P",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "contradiction_detected"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-027",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "contradiction",
+      "audit_text": "User: Can I use this image for commercial purposes?\n\nAI: Yes, all our images are licensed under Creative Commons Zero, meaning you can use them commercially. Our images are for non-commercial use only.",
+      "context": {
+        "response_type": "contradictory_advice",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "contradiction",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "contradiction",
+          "variables": {
+            "P": "can_use_commercially"
+          },
+          "premises": [
+            "P",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "contradiction_detected"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-028",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "contradiction",
+      "audit_text": "User: Should I back up my data?\n\nAI: Data backup is critical. You should back up daily. But backing up is unnecessary since cloud services handle all data redundancy automatically.",
+      "context": {
+        "response_type": "contradictory_advice",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "contradiction",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "contradiction",
+          "variables": {
+            "P": "should_backup_data"
+          },
+          "premises": [
+            "P",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "contradiction_detected"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-029",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "contradiction",
+      "audit_text": "User: Is the meeting at 2 PM or 3 PM?\n\nAI: The meeting is at 2 PM in the conference room. The meeting is at 3 PM in the conference room.",
+      "context": {
+        "response_type": "contradictory_advice",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "contradiction",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "contradiction",
+          "variables": {
+            "P": "meeting_at_2pm"
+          },
+          "premises": [
+            "P",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "contradiction_detected"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-030",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "circular_reasoning",
+      "audit_text": "User: Why is this medication effective?\n\nAI: This medication is effective because it has therapeutic properties. We know it has therapeutic properties because clinical studies show it works. The studies confirm it works because patients who took it showed improvement, which proves it's effective.",
+      "context": {
+        "response_type": "circular_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "circular_reasoning",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "circular_reasoning",
+          "variables": {
+            "P": "medication_effective",
+            "Q": "has_therapeutic_properties"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Implies(Q, P)"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "circular_reasoning_z3_ambiguous"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-031",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "circular_reasoning",
+      "audit_text": "User: How do you know the product is high quality?\n\nAI: The product is high quality because it meets all our quality standards. We know it meets quality standards because it's a high-quality product. That's how our quality assurance works.",
+      "context": {
+        "response_type": "circular_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "circular_reasoning",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "circular_reasoning",
+          "variables": {
+            "P": "is_high_quality",
+            "Q": "meets_quality_standards"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Implies(Q, P)"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "circular_reasoning_z3_ambiguous"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-032",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "circular_reasoning",
+      "audit_text": "User: Why should I trust this source?\n\nAI: You should trust this source because it's authoritative. We know it's authoritative because experts cite it. Experts cite it because it's trustworthy. It's trustworthy because it's authoritative.",
+      "context": {
+        "response_type": "circular_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "circular_reasoning",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "circular_reasoning",
+          "variables": {
+            "P": "source_trustworthy",
+            "Q": "is_authoritative",
+            "R": "cited_by_experts"
+          },
+          "premises": [
+            "Implies(Q, P)",
+            "Implies(R, Q)",
+            "Implies(P, R)"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "circular_reasoning_z3_ambiguous"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-033",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "invalid_syllogism",
+      "audit_text": "User: Some mammals live in water. Whales live in water. So are whales mammals?\n\nAI: Yes, whales are mammals. Since they live in water and some mammals live in water, whales must be mammals. That's a valid logical deduction.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "invalid_syllogism",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "invalid_syllogism",
+          "variables": {
+            "M": {
+              "type": "function",
+              "meaning": "is_mammal"
+            },
+            "W": {
+              "type": "function",
+              "meaning": "lives_in_water"
+            },
+            "some_mammal": {
+              "type": "constant",
+              "meaning": "some mammal that lives in water"
+            }
+          },
+          "premises": [
+            "And(M(some_mammal), W(some_mammal))",
+            "W(whale)"
+          ],
+          "claimed_conclusion": "M(whale)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-034",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "invalid_syllogism",
+      "audit_text": "User: Some birds can fly. Penguins are birds. So penguins can fly?\n\nAI: Yes, penguins can fly since they are birds and some birds can fly. Being a bird means you can fly.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "invalid_syllogism",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "invalid_syllogism",
+          "variables": {
+            "B": {
+              "type": "function",
+              "meaning": "is_bird"
+            },
+            "F": {
+              "type": "function",
+              "meaning": "can_fly"
+            },
+            "some_bird": {
+              "type": "constant",
+              "meaning": "some bird that can fly"
+            }
+          },
+          "premises": [
+            "And(B(some_bird), F(some_bird))",
+            "B(penguin)"
+          ],
+          "claimed_conclusion": "F(penguin)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-035",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "invalid_syllogism",
+      "audit_text": "User: All doctors have medical degrees. Some people with medical degrees work in research. John is a doctor. So John works in research?\n\nAI: Yes, John works in research because he's a doctor. Many doctors work in research, so John likely does too.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "invalid_syllogism",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "invalid_syllogism",
+          "variables": {
+            "D": {
+              "type": "function",
+              "meaning": "is_doctor"
+            },
+            "R": {
+              "type": "function",
+              "meaning": "works_in_research"
+            }
+          },
+          "premises": [
+            "Forall(x, Implies(D(x), MedDegree(x)))",
+            "D(john)"
+          ],
+          "claimed_conclusion": "R(john)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-036",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "invalid_syllogism",
+      "audit_text": "User: All fruits are healthy. Some healthy things taste bad. So all fruits taste bad?\n\nAI: Yes, fruits taste bad because they are healthy. Healthy things generally don't taste good, so fruits are no exception.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "invalid_syllogism",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "invalid_syllogism",
+          "variables": {
+            "F": {
+              "type": "function",
+              "meaning": "is_fruit"
+            },
+            "H": {
+              "type": "function",
+              "meaning": "is_healthy"
+            },
+            "T": {
+              "type": "function",
+              "meaning": "tastes_bad"
+            }
+          },
+          "premises": [
+            "Forall(x, Implies(F(x), H(x)))",
+            "Exists(x, And(H(x), T(x)))"
+          ],
+          "claimed_conclusion": "Forall(x, Implies(F(x), T(x)))",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-037",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "clean",
+      "audit_text": "User: If it rains, the ground gets wet. It is raining. So will the ground get wet?\n\nAI: Yes, the ground will get wet because it's raining. When it rains, the ground gets wet.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "no_fallacy"
+      },
+      "ground_truth": {
+        "error_type": "clean",
+        "has_formal_fallacy": false,
+        "fol_encoding": {
+          "formula_type": "valid_modus_ponens",
+          "variables": {
+            "P": "is_raining",
+            "Q": "ground_wet"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "valid_inference"
+        },
+        "expected_verdict": "discard"
+      }
+    },
+    {
+      "id": "AFV-038",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "clean",
+      "audit_text": "User: All humans are mortal. Socrates is human. Is Socrates mortal?\n\nAI: Yes, Socrates is mortal. All humans are mortal and Socrates is a human, so he is mortal.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "no_fallacy"
+      },
+      "ground_truth": {
+        "error_type": "clean",
+        "has_formal_fallacy": false,
+        "fol_encoding": {
+          "formula_type": "valid_syllogism",
+          "variables": {
+            "H": {
+              "type": "function",
+              "meaning": "is_human"
+            },
+            "M": {
+              "type": "function",
+              "meaning": "is_mortal"
+            }
+          },
+          "premises": [
+            "Forall(x, Implies(H(x), M(x)))",
+            "H(socrates)"
+          ],
+          "claimed_conclusion": "M(socrates)",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "valid_inference"
+        },
+        "expected_verdict": "discard"
+      }
+    },
+    {
+      "id": "AFV-039",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "clean",
+      "audit_text": "User: If a file ends in .py, it's a Python file. This file is called main.py. What is it?\n\nAI: Main.py is a Python file because it ends in .py. Files ending in .py are Python files.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "no_fallacy"
+      },
+      "ground_truth": {
+        "error_type": "clean",
+        "has_formal_fallacy": false,
+        "fol_encoding": {
+          "formula_type": "valid_modus_ponens",
+          "variables": {
+            "P": "ends_in_dot_py",
+            "Q": "is_python_file"
+          },
+          "premises": [
+            "Forall(x, Implies(EndsDotPy(x), IsPython(x)))",
+            "EndsDotPy(main_py)"
+          ],
+          "claimed_conclusion": "IsPython(main_py)",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "valid_inference"
+        },
+        "expected_verdict": "discard"
+      }
+    },
+    {
+      "id": "AFV-040",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "clean",
+      "audit_text": "User: A number is even if it's divisible by 2. 6 is divisible by 2. Is 6 even?\n\nAI: Yes, 6 is even because it's divisible by 2. Numbers divisible by 2 are even numbers.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "no_fallacy"
+      },
+      "ground_truth": {
+        "error_type": "clean",
+        "has_formal_fallacy": false,
+        "fol_encoding": {
+          "formula_type": "valid_modus_ponens",
+          "variables": {
+            "P": "divisible_by_2",
+            "Q": "is_even"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "valid_inference"
+        },
+        "expected_verdict": "discard"
+      }
+    },
+    {
+      "id": "AFV-041",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "clean",
+      "audit_text": "User: If a user is logged in, they can access the dashboard. The user is logged in. Can they access the dashboard?\n\nAI: Yes, the user can access the dashboard since they are logged in. That's the access requirement.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "no_fallacy"
+      },
+      "ground_truth": {
+        "error_type": "clean",
+        "has_formal_fallacy": false,
+        "fol_encoding": {
+          "formula_type": "valid_modus_ponens",
+          "variables": {
+            "P": "user_logged_in",
+            "Q": "can_access_dashboard"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "valid_inference"
+        },
+        "expected_verdict": "discard"
+      }
+    },
+    {
+      "id": "AFV-042",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "clean",
+      "audit_text": "User: A triangle has three sides. This shape has three sides. What is it?\n\nAI: A shape with three sides is a triangle by definition. So this shape is a triangle.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "no_fallacy"
+      },
+      "ground_truth": {
+        "error_type": "clean",
+        "has_formal_fallacy": false,
+        "fol_encoding": {
+          "formula_type": "valid_biconditional",
+          "variables": {
+            "P": "has_three_sides",
+            "Q": "is_triangle"
+          },
+          "premises": [
+            "Eq(P, Q)",
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "valid_inference"
+        },
+        "expected_verdict": "discard"
+      }
+    },
+    {
+      "id": "AFV-043",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "clean",
+      "audit_text": "User: If a transaction is over $10,000, it requires manager approval. This transaction is $500. Does it require manager approval?\n\nAI: No, this transaction does not require manager approval since it's only $500, which is under the $10,000 threshold.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "no_fallacy"
+      },
+      "ground_truth": {
+        "error_type": "clean",
+        "has_formal_fallacy": false,
+        "fol_encoding": {
+          "formula_type": "valid_denying_consequent",
+          "variables": {
+            "P": "over_10000",
+            "Q": "requires_approval"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(Q)"
+          ],
+          "claimed_conclusion": "Not(P)",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "valid_inference"
+        },
+        "expected_verdict": "discard"
+      }
+    },
+    {
+      "id": "AFV-044",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "clean",
+      "audit_text": "User: All mammals are warm-blooded. Dogs are mammals. Are dogs warm-blooded?\n\nAI: Yes, dogs are warm-blooded. All mammals are warm-blooded and dogs are mammals, so dogs are warm-blooded.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "no_fallacy"
+      },
+      "ground_truth": {
+        "error_type": "clean",
+        "has_formal_fallacy": false,
+        "fol_encoding": {
+          "formula_type": "valid_syllogism",
+          "variables": {
+            "M": {
+              "type": "function",
+              "meaning": "is_mammal"
+            },
+            "W": {
+              "type": "function",
+              "meaning": "is_warm_blooded"
+            }
+          },
+          "premises": [
+            "Forall(x, Implies(M(x), W(x)))",
+            "M(dog)"
+          ],
+          "claimed_conclusion": "W(dog)",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "valid_inference"
+        },
+        "expected_verdict": "discard"
+      }
+    },
+    {
+      "id": "AFV-045",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "clean",
+      "audit_text": "User: If a device is plugged in, it charges. My phone is not charging. Is it plugged in?\n\nAI: No, the phone is probably not plugged in. If it were plugged in, it would be charging. Since it's not charging, it's likely not plugged in.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "no_fallacy"
+      },
+      "ground_truth": {
+        "error_type": "clean",
+        "has_formal_fallacy": false,
+        "fol_encoding": {
+          "formula_type": "valid_modus_tollens",
+          "variables": {
+            "P": "device_plugged_in",
+            "Q": "device_charging"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(Q)"
+          ],
+          "claimed_conclusion": "Not(P)",
+          "expected_z3_result": "unsat",
+          "expected_z3_interpretation": "valid_inference"
+        },
+        "expected_verdict": "discard"
+      }
+    },
+    {
+      "id": "AFV-046",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "denying_antecedent",
+      "audit_text": "User: If a package is marked as fragile, it needs special handling. This package is not marked as fragile. So it doesn't need special handling?\n\nAI: Correct. No fragile marking means no special handling needed. Only fragile packages need special handling.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "denying_antecedent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "denying_antecedent",
+          "variables": {
+            "P": "marked_fragile",
+            "Q": "needs_special_handling"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Not(P)"
+          ],
+          "claimed_conclusion": "Not(Q)",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-047",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "non_sequitur",
+      "audit_text": "User: The temperature dropped 10 degrees today. Should I turn on the heating?\n\nAI: Yes, since the temperature dropped, you should buy a new winter coat. Temperature drops always indicate that it's time for new winter clothing.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "non_sequitur",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "non_sequitur",
+          "variables": {
+            "P": "temperature_dropped",
+            "Q": "should_buy_new_coat"
+          },
+          "premises": [
+            "P"
+          ],
+          "claimed_conclusion": "Q",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    },
+    {
+      "id": "AFV-048",
+      "dataset": "ai-formal-fallacies",
+      "dimension": "affirming_consequent",
+      "audit_text": "User: The building code says if there is a fire, the alarm goes off. The alarm is going off. So is there a fire?\n\nAI: Yes, the alarm going off means there must be a fire. The alarm always indicates a fire.",
+      "context": {
+        "response_type": "logical_reasoning",
+        "expected_verification": "formal"
+      },
+      "ground_truth": {
+        "error_type": "affirming_consequent",
+        "has_formal_fallacy": true,
+        "fol_encoding": {
+          "formula_type": "affirming_consequent",
+          "variables": {
+            "P": "there_is_fire",
+            "Q": "alarm_goes_off"
+          },
+          "premises": [
+            "Implies(P, Q)",
+            "Q"
+          ],
+          "claimed_conclusion": "P",
+          "expected_z3_result": "sat",
+          "expected_z3_interpretation": "counterexample_exists"
+        },
+        "expected_verdict": "formal"
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "logic-audit"
+version = "1.0.0"
+description = "Logic Audit - formal verification framework for logical fallacy detection using Z3 theorem prover"
+requires-python = ">=3.10"
+dependencies = [
+    "z3-solver>=4.13",
+    "mcp>=1.27",
+]
+
+[project.scripts]
+logic-audit-mcp = "mcp_server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["src*"]
