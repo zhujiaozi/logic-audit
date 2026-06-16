@@ -28,3 +28,4 @@ Thumbs.db
 
 # Test temp files (if any)
 test_*.py
+folio_val.jsonl
