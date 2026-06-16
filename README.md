@@ -182,6 +182,8 @@ Z3 返回：
 ├── README.md                # 本文件
 ├── data/
 │   └── ai_formal_fallacies.json  # 内置 48 条测试数据集
+├── tests/
+│   └── test_edge_cases.py   # 边界测试（23 项，覆盖个体域/多元谓词/大公式等）
 └── src/
     ├── __init__.py
     ├── mcp_server.py        # MCP Server（9 个工具）
@@ -194,20 +196,34 @@ Z3 返回：
 
 ## 评估
 
-内置 48 条测试用例，覆盖全部 7 类标签（6 类谬误 + 有效推理），每条包含手写 FOL 编码和金标准 verdict。
+### 内置数据集（48 条）
 
-一键运行：
+覆盖全部 7 类标签（6 类谬误 + 有效推理），每条含手写 FOL 编码和金标准 verdict。
 
 ```bash
-# 通过 MCP 工具
-get_error_type_info  # 查看类型列表
-run_direction_b_eval # 运行全部 48 条评估
-
-# 或直接调用
-python src/run_direction_b_eval.py
+run_direction_b_eval   # 通过 MCP 工具
+python src/run_direction_b_eval.py  # 或直接调用
 ```
 
-预期准确率：100%（48/48）—— 因为这是 Z3 定理证明，不是统计预测。
+预期准确率：100% —— Z3 定理证明，不是统计预测。
+
+### FOLIO 验证集（第三方基准）
+
+[FOLIO](https://github.com/Yale-LILY/FOLIO) 是耶鲁发布的 FOL 推理基准，每条含 NL + FOL 编码 + 金标准标签。
+
+```bash
+python test_folio.py --start N --size 10   # 从第 N 条起跑 10 条
+```
+
+实测 35 条正确率 **97.1%**（34/35），唯一争议案例经检查为 FOLIO 标注本身可能不准确，Z3 给出了完整的可核查反例模型。
+
+### 边界测试（23 项）
+
+```bash
+python tests/test_edge_cases.py
+```
+
+覆盖：空数据校验 / 经典推理模式 / 个体域（苏格拉底三段论）/ 多元谓词（一元至三元）/ 嵌套量词 / 大公式深度 10 嵌套 / 12 变量 And 链 / 未声明变量自动创建 / MCP 协议集成。
 
 ---
 
