@@ -18,9 +18,14 @@ from z3 import (
     Bool, BoolVal, And, Or, Not, Implies, Xor,
     Solver, sat, unsat, unknown,
     Function, IntSort, BoolSort, RealSort,
-    ForAll, Exists, Const,
+    ForAll, Exists, Const, DeclareSort,
 )
-# Eq is not a top-level symbol; use z3.simplify(a == b) or a.__eq__(b) instead
+
+# ─── Sorts ─────────────────────────────────────────────────────────────────
+# Individual sort for FOL individual constants (persons, objects, etc.)
+# Predicates are functions from Individual → Bool
+# Quantified variables range over Individual
+Individual = DeclareSort("Individual")
 
 
 # ─── Verdict Types ────────────────────────────────────────────────────────────
@@ -123,8 +128,8 @@ def _build_from_tokens(tokens: list, var_map: dict, idx: int, local_vars: dict =
         var_name = tokens[idx + 2]
         if idx + 3 >= len(tokens) or tokens[idx + 3] != ',':
             raise ValueError("Expected ',' after Forall variable")
-        # Create quantified variable and add to local scope
-        qvar = Const(var_name, BoolSort())
+        # Create quantified variable over Individual sort
+        qvar = Const(var_name, Individual)
         inner_scope = dict(local_vars or {})
         inner_scope[var_name] = qvar
         body, next_idx = _build_from_tokens(tokens, var_map, idx + 4, inner_scope)
@@ -138,7 +143,7 @@ def _build_from_tokens(tokens: list, var_map: dict, idx: int, local_vars: dict =
         var_name = tokens[idx + 2]
         if idx + 3 >= len(tokens) or tokens[idx + 3] != ',':
             raise ValueError("Expected ',' after Exists variable")
-        qvar = Const(var_name, BoolSort())
+        qvar = Const(var_name, Individual)
         inner_scope = dict(local_vars or {})
         inner_scope[var_name] = qvar
         body, next_idx = _build_from_tokens(tokens, var_map, idx + 4, inner_scope)
@@ -146,25 +151,35 @@ def _build_from_tokens(tokens: list, var_map: dict, idx: int, local_vars: dict =
             raise ValueError("Expected ')' after Exists body")
         return Exists([qvar], body), next_idx + 1
 
-    # Predicate application: P(x) where P is a function in scope and x is an argument
+    # Predicate application: P(x) or P(x, y) or P(x, y, z) etc.
     if idx + 1 < len(tokens) and tokens[idx + 1] == '(':
         func_name = token
+        idx += 2  # skip past (
+        # Parse all arguments separated by commas
+        args = []
+        while idx < len(tokens) and tokens[idx] != ')':
+            arg, idx = _build_from_tokens(tokens, var_map, idx, local_vars)
+            args.append(arg)
+            if idx < len(tokens) and tokens[idx] == ',':
+                idx += 1
+        if idx >= len(tokens) or tokens[idx] != ')':
+            raise ValueError(f"Expected ')' after predicate {func_name} arguments")
+        idx += 1  # skip )
+        # Create or retrieve the function with correct arity
         if func_name not in scope:
-            # Auto-create as a Z3 uninterpreted function
-            scope[func_name] = Function(func_name, BoolSort(), BoolSort())
+            # Build domain sorts: n × Individual → Bool
+            domain_sorts = [Individual] * len(args)
+            scope[func_name] = Function(func_name, *domain_sorts, BoolSort())
         func = scope[func_name]
-        arg, next_idx = _build_from_tokens(tokens, var_map, idx + 2, local_vars)
-        if next_idx >= len(tokens) or tokens[next_idx] != ')':
-            raise ValueError(f"Expected ')' after predicate {func_name} argument")
-        return func(arg), next_idx + 1
+        return func(*args), idx
 
     # Variable reference (check scope (local_vars) first, then var_map)
     if token in scope:
         return scope[token], idx + 1
 
-    # Unknown identifier: auto-create as a Z3 Bool constant
+    # Unknown identifier: auto-create as an Individual constant
     # This makes the parser more robust for natural language names like 'whale', 'socrates', etc.
-    new_const = Const(token, BoolSort())
+    new_const = Const(token, Individual)
     scope[token] = new_const
     return new_const, idx + 1
 
@@ -223,14 +238,11 @@ def parse_fol_encoding(fol_json: dict) -> dict:
             if vtype == "bool":
                 var_map[name] = Bool(name)
             elif vtype == "function":
-                domain = v.get("domain", "bool")
-                range_t = v.get("range", "bool")
-                if domain == "bool" and range_t == "bool":
-                    var_map[name] = Function(name, BoolSort(), BoolSort())
-                else:
-                    var_map[name] = Function(name, IntSort(), BoolSort())
+                # Predicates are functions from Individual → Bool
+                var_map[name] = Function(name, Individual, BoolSort())
             elif vtype == "constant":
-                var_map[name] = Const(name, BoolSort())
+                # Individual constants (persons, objects, etc.)
+                var_map[name] = Const(name, Individual)
             else:
                 var_map[name] = Bool(name)  # default fallback
 
