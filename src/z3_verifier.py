@@ -27,6 +27,9 @@ from z3 import (
 # Quantified variables range over Individual
 Individual = DeclareSort("Individual")
 
+# Sentinel for function-type variables — arity is unknown until formula parsing
+_FUNCTION_SENTINEL = object()
+
 
 # ─── Verdict Types ────────────────────────────────────────────────────────────
 
@@ -166,7 +169,7 @@ def _build_from_tokens(tokens: list, var_map: dict, idx: int, local_vars: dict =
             raise ValueError(f"Expected ')' after predicate {func_name} arguments")
         idx += 1  # skip )
         # Create or retrieve the function with correct arity
-        if func_name not in scope:
+        if func_name not in scope or scope[func_name] is _FUNCTION_SENTINEL:
             # Build domain sorts: n × Individual → Bool
             domain_sorts = [Individual] * len(args)
             scope[func_name] = Function(func_name, *domain_sorts, BoolSort())
@@ -238,8 +241,10 @@ def parse_fol_encoding(fol_json: dict) -> dict:
             if vtype == "bool":
                 var_map[name] = Bool(name)
             elif vtype == "function":
-                # Predicates are functions from Individual → Bool
-                var_map[name] = Function(name, Individual, BoolSort())
+                # Don't pre-create Z3 functions — arity is unknown until formula parsing.
+                # Use a sentinel so the formula parser knows this is a function name
+                # and will create it with the correct arity on first use.
+                var_map[name] = _FUNCTION_SENTINEL
             elif vtype == "constant":
                 # Individual constants (persons, objects, etc.)
                 var_map[name] = Const(name, Individual)
